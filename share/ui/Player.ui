@@ -72,7 +72,7 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>170</width>
+       <width>121</width>
        <height>30</height>
       </rect>
      </property>
@@ -80,8 +80,8 @@
     <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
-       <x>180</x>
-       <y>0</y>
+       <x>100</x>
+       <y>30</y>
        <width>141</width>
        <height>28</height>
       </rect>
@@ -125,32 +125,19 @@
     <widget class="Phonon::SeekSlider" name="seekSlider">
      <property name="geometry">
       <rect>
-       <x>340</x>
+       <x>139</x>
        <y>0</y>
-       <width>810</width>
+       <width>1011</width>
        <height>30</height>
       </rect>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_open">
-     <property name="geometry">
-      <rect>
-       <x>5</x>
-       <y>32</y>
-       <width>165</width>
-       <height>26</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Open</string>
      </property>
     </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
-       <x>500</x>
-       <y>32</y>
-       <width>401</width>
+       <x>610</x>
+       <y>30</y>
+       <width>530</width>
        <height>20</height>
       </rect>
      </property>
@@ -161,8 +148,8 @@
     <widget class="QPushButton" name="btn_prev">
      <property name="geometry">
       <rect>
-       <x>180</x>
-       <y>32</y>
+       <x>20</x>
+       <y>30</y>
        <width>71</width>
        <height>26</height>
       </rect>
@@ -179,7 +166,7 @@
      <property name="geometry">
       <rect>
        <x>250</x>
-       <y>32</y>
+       <y>30</y>
        <width>71</width>
        <height>26</height>
       </rect>
@@ -196,7 +183,7 @@
      <property name="geometry">
       <rect>
        <x>420</x>
-       <y>32</y>
+       <y>30</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -212,34 +199,34 @@
     <widget class="QLabel" name="lab_video_tot">
      <property name="geometry">
       <rect>
-       <x>1220</x>
-       <y>5</y>
+       <x>530</x>
+       <y>32</y>
        <width>70</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string/>
+      <string>/ -- : -- : --</string>
      </property>
     </widget>
     <widget class="QLabel" name="lab_video_cur">
      <property name="geometry">
       <rect>
-       <x>1160</x>
-       <y>5</y>
+       <x>470</x>
+       <y>32</y>
        <width>60</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string/>
+      <string>-- : -- : --</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_random">
      <property name="geometry">
       <rect>
        <x>380</x>
-       <y>32</y>
+       <y>30</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -256,7 +243,7 @@
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>32</y>
+       <y>30</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -268,6 +255,54 @@
       <iconset>
        <normaloff>../icons/view-media-equalizer.png</normaloff>../icons/view-media-equalizer.png</iconset>
      </property>
+    </widget>
+    <widget class="QLineEdit" name="line_search">
+     <property name="geometry">
+      <rect>
+       <x>1155</x>
+       <y>32</y>
+       <width>113</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_search">
+     <property name="geometry">
+      <rect>
+       <x>1275</x>
+       <y>32</y>
+       <width>83</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Search</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="combo_source">
+     <property name="geometry">
+      <rect>
+       <x>1155</x>
+       <y>5</y>
+       <width>113</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Youtube</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Wareztuga</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>A tua mãe</string>
+      </property>
+     </item>
     </widget>
    </widget>
   </widget>
@@ -284,8 +319,11 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSave_Playlist"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionOpen_Multiple"/>
+    <addaction name="actionOpen_Directory"/>
     <addaction name="actionOpen_Playlist"/>
+    <addaction name="actionSave_Playlist"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -318,11 +356,19 @@
    </property>
   </action>
   <action name="actionSave_Playlist">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../usr/share/icons/oxygen/16x16/actions/document-save.png</normaloff>../../../../../../usr/share/icons/oxygen/16x16/actions/document-save.png</iconset>
+   </property>
    <property name="text">
     <string>Save Playlist</string>
    </property>
   </action>
   <action name="actionOpen_Playlist">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../usr/share/icons/oxygen/16x16/places/folder-sound.png</normaloff>../../../../../../usr/share/icons/oxygen/16x16/places/folder-sound.png</iconset>
+   </property>
    <property name="text">
     <string>Open Playlist</string>
    </property>
@@ -334,6 +380,29 @@
    </property>
    <property name="text">
     <string>Help</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionOpen_Multiple">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../usr/share/icons/oxygen/16x16/places/document-multiple.png</normaloff>../../../../../../usr/share/icons/oxygen/16x16/places/document-multiple.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open Multiple</string>
+   </property>
+  </action>
+  <action name="actionOpen_Directory">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../usr/share/icons/oxygen/16x16/places/folder.png</normaloff>../../../../../../usr/share/icons/oxygen/16x16/places/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open Directory</string>
    </property>
   </action>
  </widget>

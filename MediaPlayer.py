@@ -16,6 +16,7 @@ __author__ = 'saraiva'
 
 
 import sys
+import os
 from random import shuffle
 
 from PyQt4 import QtCore, QtGui, uic
@@ -23,6 +24,7 @@ from PyQt4 import QtCore, QtGui, uic
 from PyQt4.phonon import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from os.path import expanduser
 import pickle
 
 
@@ -47,6 +49,8 @@ class MediaPlayer(QtGui.QMainWindow):
         self.ui = uic.loadUi('share/ui/Player.ui', self)
         self.initAttributes()
         self.videoState = 0
+        self.file_types = "All files (*.*);;Images (*.jpg *.jpeg *bmp );;" \
+                          "Audio (*.mp3 *.flac .m4a);;Videos (*.avi *.mp4 *.ogv *.avi *.tiff *mov)"
 
     def initAttributes(self):
         ''' Initialize class attributes and initial logic.
@@ -73,11 +77,17 @@ class MediaPlayer(QtGui.QMainWindow):
         self.videoPlayer.mediaObject().tick.connect(self.tock)
 
         #: Menu bar actions.
+        #: File
         QtCore.QObject.connect(self.actionExit, QtCore.SIGNAL('triggered()'), self.trigger_quit)
-        QtCore.QObject.connect(self.actionAbout, QtCore.SIGNAL('triggered()'), self.trigger_about)
-        QtCore.QObject.connect(self.actionHelp, QtCore.SIGNAL('triggered()'), self.trigger_help)
         QtCore.QObject.connect(self.actionSave_Playlist, QtCore.SIGNAL('triggered()'), self.trigger_save_playlist)
         QtCore.QObject.connect(self.actionOpen_Playlist, QtCore.SIGNAL('triggered()'), self.trigger_open_playlist)
+        QtCore.QObject.connect(self.actionOpen, QtCore.SIGNAL('triggered()'), self.trigger_open)
+        QtCore.QObject.connect(self.actionOpen_Multiple, QtCore.SIGNAL('triggered()'), self.trigger_open_multiple)
+        QtCore.QObject.connect(self.actionOpen_Directory, QtCore.SIGNAL('triggered()'), self.trigger_open_directory)
+
+        #: Help
+        QtCore.QObject.connect(self.actionAbout, QtCore.SIGNAL('triggered()'), self.trigger_about)
+        QtCore.QObject.connect(self.actionHelp, QtCore.SIGNAL('triggered()'), self.trigger_help)
 
         #: Events
         QtCore.QObject.connect(self.list, QtCore.SIGNAL('itemSelectionChanged()'), self.on_list_clicked)
@@ -98,6 +108,12 @@ class MediaPlayer(QtGui.QMainWindow):
         self.shortcutQuit.setKey(QtGui.QKeySequence("Alt+F4"))
         self.shortcutQuit.setContext(QtCore.Qt.ApplicationShortcut)
         self.shortcutQuit.activated.connect(self.trigger_quit)
+
+###############################################################################################################
+#
+#       Menu bar trigger methods!!
+#
+###############################################################################################################
 
     #: Open a previously saved playlist
     def trigger_open_playlist(self):
@@ -156,6 +172,45 @@ class MediaPlayer(QtGui.QMainWindow):
         helpDialog = help.Help(parent=self)
         helpDialog.show()
 
+    def trigger_open(self):
+        if self.videoState:
+            self.videoPlayer.stop()
+            self.videoState = 0
+        # Create a dialog showing the place to save the playlist.
+        path = QtGui.QFileDialog.getOpenFileName(self,
+                                                 "Select file", expanduser("~"), self.file_types)
+        if path:
+            self.playlistSet.add(path)
+            self.refresh_playlist()
+
+    def trigger_open_multiple(self):
+        if self.videoState:
+            self.videoPlayer.stop()
+            self.self.videoState = 0
+        # Create a dialog showing the place to save the playlist.
+        dirpath = QtGui.QFileDialog.getOpenFileNames(self,
+                                                     "Select multimedia files only",
+                                                     expanduser("~"), self.file_types)
+        if dirpath:
+            for file in dirpath:
+                self.playlistSet.add(file)
+            self.refresh_playlist()
+
+    def trigger_open_directory(self):
+        if self.videoState:
+            self.videoPlayer.stop()
+            self.self.videoState = 0
+        # Create a dialog showing the place to save the playlist.
+        qdir = QtGui.QFileDialog.getExistingDirectory(self, "Open a folder",
+                                                     expanduser("~"), QtGui.QFileDialog.ShowDirsOnly)
+        dir = str(qdir)
+        if dir:
+            paths = [os.path.join(dir, fn) for fn in next(os.walk(dir))[2]]
+            if paths:
+                for path in paths:
+                    self.playlistSet.add(path)
+                self.refresh_playlist()
+
 
 ###############################################################################################################
 #
@@ -211,7 +266,6 @@ class MediaPlayer(QtGui.QMainWindow):
         if self.current == -1:
             if len(self.playlist) > 0:
                 self.current = 0
-                self.list.setCurrentRow(self.current)
         self.play_current()
 
     @pyqtSlot()
@@ -222,6 +276,8 @@ class MediaPlayer(QtGui.QMainWindow):
     @pyqtSlot()
     def on_btn_stop_clicked(self):
         self.videoPlayer.stop()
+        self.lab_video_cur.setText('-- : -- : --')
+        self.lab_video_tot.setText('/ -- : -- : --')
         self.videoState = 0
 
     @pyqtSlot()
@@ -231,7 +287,6 @@ class MediaPlayer(QtGui.QMainWindow):
         else:
             self.current -= 1
         self.play_current()
-        self.list.setCurrentRow(self.current)
 
     @pyqtSlot()
     def on_btn_next_clicked(self):
@@ -240,7 +295,6 @@ class MediaPlayer(QtGui.QMainWindow):
         else:
             self.current += 1
         self.play_current()
-        self.list.setCurrentRow(self.current)
 
     @pyqtSlot()
     def on_btn_maximize_clicked(self):
@@ -259,20 +313,6 @@ class MediaPlayer(QtGui.QMainWindow):
             #self.button_bar.hide()
             #self.menubar.hide()
             #self.ui.videoPlayer.resize(1366, 768)
-
-    @pyqtSlot()
-    def on_btn_open_clicked(self):
-        if self.videoState:
-            self.videoPlayer.stop()
-            self.self.videoState = 0
-        # Create a dialog showing the place to save the playlist.
-        file_types = "All files (*.*);;Images (*.jpg *.jpeg *bmp );;" \
-                     "Audio (*.mp3 *.flac .m4a);;Videos (*.avi *.mp4 *.ogv *.avi *.tiff *mov)"
-        dirpath = QtGui.QFileDialog.getOpenFileNames(self, "Select multimedia files only", '',file_types)
-        if dirpath is not None:
-            for file in dirpath:
-                self.playlistSet.add(file)
-            self.refresh_playlist()
 
     @pyqtSlot()
     def on_btn_equalizer_clicked(self):
@@ -309,6 +349,7 @@ class MediaPlayer(QtGui.QMainWindow):
 
     #Play the currently selected video
     def play_current(self):
+        self.list.setCurrentRow(self.current)
         if self.videoState == 2:
             self.videoPlayer.play()
         else:
@@ -339,13 +380,17 @@ class MediaPlayer(QtGui.QMainWindow):
         self.list.setCurrentRow(self.current)
 
 
-if __name__ == "__main__":
+def main():
     app = QtGui.QApplication(sys.argv)
     app.setApplicationName('Media Player')
 
     # Create a UI instance.
-    MediaPlayer = MediaPlayer()
+    mediaPlayer = MediaPlayer()
 
     # Show the UI.
-    MediaPlayer.show()
+    mediaPlayer.show()
     app.exec_()
+
+
+if __name__ == "__main__":
+    main()
